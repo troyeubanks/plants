@@ -4,33 +4,54 @@ class_name StemGenerator
 
 var patterns = [
 	{
+		# 0
+		# typical tree
 		'axiom': 'X',
-		'iterations': 7,
+		'iterations': 5,
 		'yaw_delta': 25.7 * PI / 180,
 		'roll_delta': 31.2 * PI / 180,
 		'pitch_delta': 25.7 * PI / 180,
-		'X': 'F[+X][/X][\\X][-X]FX',
-		'F': 'FF'
+		'X': 'F[+X][/X]L[&X][-X]FX',
+		'F': 'FF',
+		'branch_length': 2,
+		'branch_width': 3,
+		'branch_width_dropoff': 0.707,
+		'leaf_length': 2,
+		'leaf_angle': 60 * PI / 180,
+		'leaf_color': Color(.133, .55, .133)
 	},
 	{
+		# 1
+		# thin-branched bush/shrub
 		'axiom': 'X',
-		'iterations': 1,
+		'iterations': 7,
 		'yaw_delta': 22.5 * PI / 180,
-		'roll_delta': 45 * PI / 180,
+		'roll_delta': 22.5 * PI / 180,
 		'pitch_delta': 22.5 * PI / 180,
-		'X': '[&FL!X]/////[&FL!X]///////[&FL!X]',
+		'X': '[&FL!Xf]/////[&FL!Xf]///////[&FL!Xf]',
 		'F': 'S/////F',
-		'S': 'FL'
+		'S': 'FL',
+		'branch_length': 2,
+		'branch_width': 0.3,
+		'branch_width_dropoff': 0.707,
+		'leaf_length': 1,
+		'leaf_angle': 22.5 * PI / 180,
+		'leaf_color': Color(.133, .55, .133)
 	},
 	{
+		# 2
 		'axiom': 'F',
 		'F': 'FF-[/-F+F+F]+[&+F-F-F]',
 		'iterations': 4,
 		'yaw_delta': 22.5 * PI / 180,
 		'roll_delta': 22.5 * PI / 180,
-		'pitch_delta': 22.5 * PI / 180
+		'pitch_delta': 22.5 * PI / 180,
+		'branch_length': 1,
+		'branch_width': 0.2,
+		'branch_width_dropoff': 0.707,
 	},
 	{
+		# 3
 		'axiom': 'X',
 		'iterations': 5,
 		'yaw_delta': 22.5 * PI / 180,
@@ -40,6 +61,7 @@ var patterns = [
 		'F': 'FF'
 	},
 	{
+		# 4
 		'axiom': 'F',
 		'iterations': 5,
 		'yaw_delta': 25.7 * PI / 180,
@@ -48,6 +70,7 @@ var patterns = [
 		'F': 'F[&+F]&F[/-F]/F'
 	},
 	{
+		# 5
 		'axiom': 'X',
 		'iterations': 7,
 		'yaw_delta': 25.7 * PI / 180,
@@ -58,6 +81,7 @@ var patterns = [
 		'F': 'FF'
 	},
 	{
+		# 6
 		'axiom': 'X',
 		'iterations': 6,
 		'yaw_delta': 60 * PI / 180,
@@ -67,6 +91,7 @@ var patterns = [
 		'F': 'X-F-X'
 	},
 	{
+		# 7
 		'axiom': 'F-F-F-F',
 		'iterations': 2,
 		'yaw_delta': 90 * PI / 180,
@@ -75,6 +100,7 @@ var patterns = [
 		'F': 'F+FF-FF-F-F+F+FF-F-F+F+FF+FF-F'
 	},
 	{
+		# 8
 		'axiom': '-F',
 		'iterations': 4,
 		'yaw_delta': 90 * PI / 180,
@@ -83,6 +109,7 @@ var patterns = [
 		'F': 'F+F-F-F+F'
 	},
 	{
+		# 9
 		'axiom': 'F-F-F-F',
 		'iterations': 4,
 		'yaw_delta': 90 * PI / 180,
@@ -91,6 +118,7 @@ var patterns = [
 		'F': 'FF-F--F-F'
 	},
 	{
+		# 10
 		'axiom': 'F',
 		'iterations': 3,
 		'yaw_delta': 30 * PI / 180,

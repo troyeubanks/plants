@@ -74,6 +74,10 @@ func restore_state():
 		_left = prev_state.left
 		_pos = prev_state.pos
 
+func move_forward(distance: float):
+	var v = distance * _heading.normalized()
+	set_pos(_pos + distance * v)
+
 func draw_forward(distance: float, width: float, color: Color):
 	var phi = 2 * PI / _sides
 	var v = distance * _heading.normalized()
@@ -96,3 +100,98 @@ func draw_forward(distance: float, width: float, color: Color):
 #		surface_tool.add_vertex(b + v)
 #		surface_tool.add_vertex(a + v)
 	set_pos(_pos + v)
+
+# theta is angle, in radians, from stem
+# length is segment length, of which there are three
+func draw_leaf(length: float, theta: float, color: Color) -> void:
+	# save to reset after drawing
+	save_state()
+	surface_tool.add_color(color)
+
+	# base of leaf
+	var initial_pos = _pos
+	pitch(2 * theta)
+
+	# left side of leaf
+	surface_tool.add_vertex(initial_pos)
+	yaw(theta)
+	move_forward(length)
+	surface_tool.add_vertex(_pos)
+	yaw(-theta)
+	move_forward(length * 2)
+	surface_tool.add_vertex(_pos)
+	surface_tool.add_vertex(initial_pos)
+	surface_tool.add_vertex(_pos)
+	yaw(-theta)
+	move_forward(length)
+	surface_tool.add_vertex(_pos)
+	yaw(theta)
+
+	# right side of leaf
+	surface_tool.add_vertex(initial_pos)
+	surface_tool.add_vertex(_pos)
+	reverse()
+	yaw(theta)
+	move_forward(length)
+	surface_tool.add_vertex(_pos)
+	surface_tool.add_vertex(initial_pos)
+	surface_tool.add_vertex(_pos)
+	yaw(-theta)
+	move_forward(length * 2)
+	surface_tool.add_vertex(_pos)
+
+	# reset state after drawing
+	restore_state()
+
+# pitch_delta should be in radians
+# angle is from centerline of petal
+# length is length of segment
+func draw_flower_petal(angle: float, length: float, pitch_delta: float, color: Color):
+	save_state()
+	surface_tool.add_color(color)
+
+	pitch(4 * pitch_delta)
+	surface_tool.add_vertex(_pos)
+	yaw(-angle)
+	move_forward(length)
+	surface_tool.add_vertex(_pos)
+	yaw(angle)
+	move_forward(length)
+	surface_tool.add_vertex(_pos)
+
+	reverse()
+
+	surface_tool.add_vertex(_pos)
+	yaw(-angle)
+	move_forward(length)
+	surface_tool.add_vertex(_pos)
+	yaw(angle)
+	move_forward(length)
+	surface_tool.add_vertex(_pos)
+
+	restore_state()
+
+#	flower → [&&& pedicel ‘ / wedge //// wedge ////
+#	wedge //// wedge //// wedge ]
+#	pedicel → FF
+#	wedge → [‘ ∧ F][ { &&&& −f+f | −f+f } ]
+func draw_flower(
+	pitch_angle: float,
+	roll_angle: float,
+	stem_length: float,
+	stem_width: float,
+	petal_length: float,
+	petal_angle: float,
+	stem_color: Color,
+	petal_color: Color):
+		save_state()
+
+		pitch(3 * pitch_angle)
+		draw_forward(2 * stem_length, stem_width, stem_color)
+
+		roll(roll_angle)
+		draw_flower_petal(petal_angle, petal_length, pitch_angle, petal_color)
+		for i in range(5):
+			roll(4 * roll_angle)
+			draw_flower_petal(petal_angle, petal_length, pitch_angle, petal_color)
+		restore_state()

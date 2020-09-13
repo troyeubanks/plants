@@ -7,19 +7,21 @@ export var trunk_width := 1.0 setget set_trunk_width
 export var segment_length := 1.0 setget set_segment_length
 
 
-var tree = 0
+var tree = 1
 
 
 var cursor_position := Vector3.ZERO
-var branch_width = 10
+var branch_width = 0.3
 var branch_width_dropoff = 0.707
-var branch_length = 1
+var branch_length = 3
 var branch_length_dropoff = 0.707
 var branch_color = Color(0.55, .27, .075)
 var branch_sides = 6
 
 var leaf_color = Color(.133, .55, .133)
-var leaf_length = 3
+var leaf_edge_length = 1
+
+var flower_color := Color(188, 188, 186)
 
 func set_material(mat: Material):
 	material = mat
@@ -56,27 +58,25 @@ func generate() -> void:
 	mesh = turtle.surface_tool.commit()
 	set_surface_material(0, material)
 
-func draw_leaf(st: SurfaceTool) -> void:
-	var pos = cursor_position
-	st.add_color(leaf_color)
-	st.add_vertex(pos)
-	st.add_vertex(pos + Vector3(-1, 1, 1))
-	st.add_vertex(pos + Vector3(1, 1, 1))
-
-
-#	[’’’∧∧{-f+f+f-|-f+f+f}]
-#	st.add_vertex(pos)
-#	st.add_vertex(pos + v)
-#	st.add_vertex(pos + Vector3(v.y, v.x, v.z))
-
 func draw_branches(turtle: Turtle, pattern, sentence: String) -> void:
+	var current_width = pattern.branch_width
+	var current_length = pattern.branch_length
+	var dimension_stack = []
 	for c in sentence:
 		if c == 'F':
-			turtle.draw_forward(branch_length, branch_width, branch_color)
+			turtle.draw_forward(current_length, current_width, branch_color)
 		elif c == '[':
 			turtle.save_state()
+			dimension_stack.append({
+				'width': current_width,
+				'length': current_length
+			})
 		elif c == ']':
 			turtle.restore_state()
+			var dimensions = dimension_stack.pop_back()
+			if (dimensions):
+				current_length = dimensions.length
+				current_width = dimensions.width
 		elif c == '+':
 			turtle.yaw(pattern.yaw_delta)
 		elif c == '-':
@@ -92,16 +92,22 @@ func draw_branches(turtle: Turtle, pattern, sentence: String) -> void:
 		elif c == 'X':
 			pass
 		elif c == '!':
-			branch_width *= branch_width_dropoff
+			current_width *= pattern.branch_width_dropoff
 		elif c == 'L':
-#			draw_leaf(st)
-			pass
+			turtle.draw_leaf(pattern.leaf_length, pattern.leaf_angle, pattern.leaf_color)
 		elif c == '|':
 			turtle.reverse()
 		elif c == 'f':
-			# move forward without drawing
-			pass
-		elif c == 'S':
-			pass
+			# draw flower
+			turtle.draw_flower(
+				pattern.pitch_delta,
+				pattern.roll_delta,
+				0.1,
+				branch_width,
+				1,
+				18 * PI / 180,
+				branch_color,
+				flower_color
+			)
 		else:
-			push_error('Invalid L-System command: ' + c)
+			pass
