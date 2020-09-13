@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "StemGenerator",
 "language": "GDScript",
 "path": "res://StemGenerator.gd"
+}, {
+"base": "Reference",
+"class": "Turtle",
+"language": "GDScript",
+"path": "res://Turtle.gd"
 } ]
 _global_script_class_icons={
-"StemGenerator": ""
+"StemGenerator": "",
+"Turtle": ""
 }
 
 [application]

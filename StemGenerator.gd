@@ -16,7 +16,7 @@ var patterns = [
 		'iterations': 7,
 		'angle': 22.5 * PI / 180,
 		'facing_delta': 45 * PI / 180,
-		'X': '[FL!X]/////[FL!X]///////[FL!X]',
+		'X': '[&FL!X]/////[&FL!X]///////[&FL!X]',
 		'F': 'S/////F',
 		'S': 'FL'
 	},
