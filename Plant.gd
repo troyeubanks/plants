@@ -7,7 +7,7 @@ export var trunk_width := 1.0 setget set_trunk_width
 export var segment_length := 1.0 setget set_segment_length
 
 
-var tree = 1
+var tree = 12
 
 
 var cursor_position := Vector3.ZERO
@@ -48,7 +48,6 @@ func generate() -> void:
 	var stem_generator := StemGenerator.new()
 	var path_specs = stem_generator.get_path_specs(tree)
 	var surface_tool = SurfaceTool.new()
-
 	var turtle = Turtle.new(surface_tool, Vector3.UP)
 
 	turtle.surface_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -89,8 +88,6 @@ func draw_branches(turtle: Turtle, pattern, sentence: String) -> void:
 			turtle.roll(-pattern.roll_delta)
 		elif c == '/':
 			turtle.roll(pattern.roll_delta)
-		elif c == 'X':
-			pass
 		elif c == '!':
 			current_width *= pattern.branch_width_dropoff
 		elif c == 'L':
@@ -103,11 +100,12 @@ func draw_branches(turtle: Turtle, pattern, sentence: String) -> void:
 				pattern.pitch_delta,
 				pattern.roll_delta,
 				0.1,
-				branch_width,
+				current_width,
 				1,
-				18 * PI / 180,
+				pattern.yaw_delta,
 				branch_color,
-				flower_color
+				flower_color,
+				5
 			)
 		else:
 			pass

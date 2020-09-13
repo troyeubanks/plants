@@ -126,6 +126,44 @@ var patterns = [
 		'pitch_delta': 30 * PI / 180,
 		'F': 'F[+F&[/++F]F]F[/-F[+F][&--F[+F]-F]F[F]-F]F[+F]F'
 	},
+	{
+		# 11
+		# thin plant with flowers
+		'axiom': 'P',
+		'iterations': 5,
+		'yaw_delta': 18 * PI / 180,
+		'roll_delta': 18 * PI / 180,
+		'pitch_delta': 18 * PI / 180,
+		'P': 'I+[P+f]--//[--L]I[++L]-[Pf]++P',
+		'I': 'FS[//&&L][//^^L]FS',
+		'S': 'FS',
+		'branch_length': 1,
+		'branch_width': 0.1,
+		'branch_width_dropoff': 0.707,
+		'leaf_length': 0.6,
+		'leaf_angle': 18 * PI / 180,
+		'leaf_color': Color(.133, .55, .133)
+	},
+	{
+		# 12
+		# stochastic plant
+		'axiom': 'F',
+		'iterations': 5,
+		'yaw_delta': 25.7 * PI / 180,
+		'roll_delta': 25.7 * PI / 180,
+		'pitch_delta': 25.7 * PI / 180,
+		'F': [
+			{ 'sentence': 'F[+F]F[−F]F', 'p': 0.33 },
+			{ 'sentence': 'F[+F]F', 'p': 0.33 },
+			{ 'sentence': 'F[-F]F', 'p': 0.34 },
+		],
+		'branch_length': 1,
+		'branch_width': 0.3,
+		'branch_width_dropoff': 0.707,
+		'leaf_length': 0.6,
+		'leaf_angle': 18 * PI / 180,
+		'leaf_color': Color(.133, .55, .133)
+	}
 ]
 
 # Called when the node enters the scene tree for the first time.
@@ -135,8 +173,17 @@ func _ready():
 func apply_rules_to_sentence(pattern, sentence: String) -> String:
 	var new_sentence = ''
 	for c in sentence:
-		if (pattern.has(c)):
-			new_sentence += pattern[c]
+		if pattern.has(c):
+			if pattern[c] is Array:
+				var r = randf()
+				var i = 0
+				while r >= 0 && i < pattern[c].size():
+					r = r - pattern[c][i].p
+					if (r <= 0):
+						new_sentence += pattern[c][i].sentence
+					i += 1
+			else:
+				new_sentence += pattern[c]
 		else:
 			new_sentence += c
 	return new_sentence

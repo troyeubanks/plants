@@ -183,7 +183,8 @@ func draw_flower(
 	petal_length: float,
 	petal_angle: float,
 	stem_color: Color,
-	petal_color: Color):
+	petal_color: Color,
+	num_petals: float):
 		save_state()
 
 		pitch(3 * pitch_angle)
@@ -191,7 +192,7 @@ func draw_flower(
 
 		roll(roll_angle)
 		draw_flower_petal(petal_angle, petal_length, pitch_angle, petal_color)
-		for i in range(5):
-			roll(4 * roll_angle)
+		for i in range(num_petals):
+			roll(num_petals * roll_angle)
 			draw_flower_petal(petal_angle, petal_length, pitch_angle, petal_color)
 		restore_state()
