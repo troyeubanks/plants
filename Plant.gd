@@ -7,11 +7,11 @@ export var trunk_width := 1.0 setget set_trunk_width
 export var segment_length := 1.0 setget set_segment_length
 
 
-var tree = 2
+var tree = 0
 
 
 var cursor_position := Vector3.ZERO
-var branch_width = 0.2
+var branch_width = 10
 var branch_width_dropoff = 0.707
 var branch_length = 1
 var branch_length_dropoff = 0.707
@@ -93,7 +93,6 @@ func draw_branches(turtle: Turtle, pattern, sentence: String) -> void:
 			pass
 		elif c == '!':
 			branch_width *= branch_width_dropoff
-			pass
 		elif c == 'L':
 #			draw_leaf(st)
 			pass

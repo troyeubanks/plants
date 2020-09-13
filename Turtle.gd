@@ -31,7 +31,7 @@ func _init(st: SurfaceTool, init_heading: Vector3, pos: Vector3 = Vector3.ZERO, 
 		var vx = ((-1 * _heading.y) - (_heading.z)) / _heading.x
 		_left = Vector3(vx, 1, 1).normalized()
 
-	_up = _left.cross(_heading)
+	_up = _left.cross(_heading).normalized()
 
 func print_self():
 	print('Heading: ', _heading)
@@ -76,8 +76,8 @@ func restore_state():
 
 func draw_forward(distance: float, width: float, color: Color):
 	var phi = 2 * PI / _sides
-	var v = distance * _heading
-	var radius = _left * width
+	var v = distance * _heading.normalized()
+	var radius = width * _left.normalized()
 	surface_tool.add_color(color)
 
 	for i in range(_sides):
