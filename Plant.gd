@@ -7,11 +7,11 @@ export var trunk_width := 1.0 setget set_trunk_width
 export var segment_length := 1.0 setget set_segment_length
 
 
-var tree = 1
+var tree = 2
 
 
 var cursor_position := Vector3.ZERO
-var branch_width = 0.5
+var branch_width = 0.2
 var branch_width_dropoff = 0.707
 var branch_length = 1
 var branch_length_dropoff = 0.707
@@ -45,43 +45,16 @@ func generate() -> void:
 	cursor_position = Vector3.ZERO
 	var stem_generator := StemGenerator.new()
 	var path_specs = stem_generator.get_path_specs(tree)
-
-#	print(path_specs.sentence)
 	var surface_tool = SurfaceTool.new()
 
 	var turtle = Turtle.new(surface_tool, Vector3.UP)
 
-	surface_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-	surface_tool.add_color(branch_color)
-	draw_branches(surface_tool, path_specs.pattern, path_specs.sentence)
-	surface_tool.index()
-	surface_tool.generate_normals()
-	print()
-	mesh = surface_tool.commit()
+	turtle.surface_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	draw_branches(turtle, path_specs.pattern, path_specs.sentence)
+	turtle.surface_tool.index()
+	turtle.surface_tool.generate_normals()
+	mesh = turtle.surface_tool.commit()
 	set_surface_material(0, material)
-
-func draw_branch(st: SurfaceTool, v: Vector3, width: float) -> void:
-	var base_vertex = v.cross(Vector3.FORWARD).normalized() * branch_width
-	var bottom = v.cross(Vector3.FORWARD).normalized()
-	var pos = cursor_position
-	var phi = (360 / branch_sides) * PI / 180
-	st.add_color(branch_color)
-
-	for i in range(branch_sides):
-		var a = pos + base_vertex.rotated(v.normalized(), i * phi)
-		var b = pos + base_vertex.rotated(v.normalized(), (i + 1) * phi)
-#		st.add_vertex(pos) 		# base
-#		st.add_vertex(a)
-#		st.add_vertex(b)
-		st.add_vertex(a)			# side 1
-		st.add_vertex(b + v)
-		st.add_vertex(b)
-		st.add_vertex(a)			# side 2
-		st.add_vertex(a + v)
-		st.add_vertex(b + v)
-#		st.add_vertex(pos + v)	# top
-#		st.add_vertex(b + v)
-#		st.add_vertex(a + v)
 
 func draw_leaf(st: SurfaceTool) -> void:
 	var pos = cursor_position
@@ -96,33 +69,26 @@ func draw_leaf(st: SurfaceTool) -> void:
 #	st.add_vertex(pos + v)
 #	st.add_vertex(pos + Vector3(v.y, v.x, v.z))
 
-func draw_branches(st: SurfaceTool, pattern, sentence: String) -> void:
-	var left = Vector3.LEFT
-	var facing = Vector3.FORWARD
-	var heading = Vector3.UP
-	var stack = []
+func draw_branches(turtle: Turtle, pattern, sentence: String) -> void:
 	for c in sentence:
 		if c == 'F':
-			var vertex = heading.normalized() * branch_length
-			draw_branch(st, vertex, branch_width)
-			cursor_position += vertex
+			turtle.draw_forward(branch_length, branch_width, branch_color)
 		elif c == '[':
-			stack.append({ 'pos': cursor_position, 'width': branch_width, 'heading': heading, 'left': left, 'facing': facing })
+			turtle.save_state()
 		elif c == ']':
-#			var vertex = Vector3(sin(rot), cos(rot), 0).normalized() * leaf_length
-#			draw_leaf(st, vertex)
-			var state = stack.pop_back()
-			cursor_position = state.pos
-			branch_width = state.width
-			heading = state.heading
-			left = state.left
-			facing = state.facing
+			turtle.restore_state()
 		elif c == '+':
-			heading = heading.rotated(facing, pattern.angle).normalized()
-			left = heading.cross(facing).normalized()
+			turtle.yaw(pattern.yaw_delta)
 		elif c == '-':
-			heading = heading.rotated(facing, -1 * pattern.angle).normalized()
-			left = heading.cross(facing).normalized()
+			turtle.yaw(-pattern.yaw_delta)
+		elif c == '&':
+			turtle.pitch(pattern.pitch_delta)
+		elif c == '^':
+			turtle.pitch(-pattern.pitch_delta)
+		elif c == '\\':
+			turtle.roll(-pattern.roll_delta)
+		elif c == '/':
+			turtle.roll(pattern.roll_delta)
 		elif c == 'X':
 			pass
 		elif c == '!':
@@ -132,29 +98,11 @@ func draw_branches(st: SurfaceTool, pattern, sentence: String) -> void:
 #			draw_leaf(st)
 			pass
 		elif c == '|':
-			heading *= -1
-			pass
+			turtle.reverse()
 		elif c == 'f':
 			# move forward without drawing
 			pass
-		elif c == '\\':
-			heading = heading.normalized().rotated(Vector3.UP, -1 * pattern.facing_delta)
-			pass
-		elif c == '/':
-			heading = heading.normalized().rotated(Vector3.UP, pattern.facing_delta)
-			# rotate positively around trunk/heading
-			pass
 		elif c == 'S':
-			pass
-		elif c == '&':
-			heading = heading.rotated(left, pattern.angle).normalized()
-			facing = facing.rotated(left, pattern.angle).normalized()
-#			var proj = heading.project(Vector3(heading.x, heading.y, 0))
-#			var cross = heading.cross(proj).normalized()
-#			heading = heading.normalized().rotated(cross.normalized(), pattern.angle)
-		elif c == '^':
-			var cross = heading.normalized().cross(Vector3.UP)
-			heading = heading.normalized().rotated(cross, -1 * pattern.angle)
 			pass
 		else:
 			push_error('Invalid L-System command: ' + c)

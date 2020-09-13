@@ -8,6 +8,7 @@ var _up = Vector3.ZERO
 var _left = Vector3.ZERO
 var _pos = Vector3.ZERO
 var _sides = 0
+var _state = []
 
 # public vars
 var surface_tool: SurfaceTool
@@ -50,13 +51,34 @@ func pitch(phi: float) -> void:
 	_heading = _heading.rotated(_left, -phi).normalized()
 	_up = _up.rotated(_left, -phi).normalized()
 
+func reverse():
+	_heading *= -1
+	_left *= -1
+
 func set_pos(new_pos: Vector3):
 	_pos = new_pos
 
-func draw_forward(distance: float, width: float):
+func save_state():
+	_state.append({
+		'heading': _heading,
+		'up': _up,
+		'left': _left,
+		'pos': _pos
+	})
+
+func restore_state():
+	var prev_state = _state.pop_back()
+	if (prev_state):
+		_heading = prev_state.heading
+		_up = prev_state.up
+		_left = prev_state.left
+		_pos = prev_state.pos
+
+func draw_forward(distance: float, width: float, color: Color):
 	var phi = 2 * PI / _sides
 	var v = distance * _heading
 	var radius = _left * width
+	surface_tool.add_color(color)
 
 	for i in range(_sides):
 		var a = _pos + radius.rotated(_heading, i * phi)
@@ -73,3 +95,4 @@ func draw_forward(distance: float, width: float):
 #		surface_tool.add_vertex(pos + v)	# top
 #		surface_tool.add_vertex(b + v)
 #		surface_tool.add_vertex(a + v)
+	set_pos(_pos + v)
