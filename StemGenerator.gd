@@ -1,40 +1,57 @@
-extends Node
-
 class_name StemGenerator
-
+	
 var patterns = [
 	{
 		# 0
 		# typical tree
 		'axiom': 'X',
-		'iterations': 5,
-		'yaw_delta': 25.7 * PI / 180,
+		'iterations': 4,
+		'yaw_delta': 25.7 * PI / 90,
 		'roll_delta': 31.2 * PI / 180,
 		'pitch_delta': 25.7 * PI / 180,
-		'X': 'F[+X][/X]L[&X][-X]FX',
+		'X': 'F[+Xf]!////[f^X]L[&f&LXL]!L[-X]F[\\X]',
 		'F': 'FF',
 		'branch_length': 2,
 		'branch_width': 3,
 		'branch_width_dropoff': 0.707,
-		'leaf_length': 2,
-		'leaf_angle': 60 * PI / 180,
+		'leaf_length': 1,
+		'leaf_angle': 33.0 * PI / 180,
 		'leaf_color': Color(.133, .55, .133)
 	},
 	{
 		# 1
 		# thin-branched bush/shrub
 		'axiom': 'X',
-		'iterations': 7,
+		'iterations': 6,
 		'yaw_delta': 22.5 * PI / 180,
 		'roll_delta': 22.5 * PI / 180,
 		'pitch_delta': 22.5 * PI / 180,
-		'X': '[&FL!Xf]/////[&FL!Xf]///////[&FL!Xf]',
-		'F': 'S/////F',
-		'S': 'FL',
+#		'X': '[&FL!Xf]/////[&FL!Xf]///////[&FL!Xf]|',
+		'X': [
+			{
+				'sentence': '[&FL!Xf]/////[&FL!Xf]///////[&FL!Xf]|',
+				'p': 0.25
+			},
+			{
+				'sentence': '[&FLXf]///[&FLXf]/////[&FLXf]|',
+				'p': 0.25
+			},
+			{
+				'sentence': '[&FLXf]//[&FLXf]\\\\[&FLXf]|',
+				'p': 0.25
+			},
+			{
+				'sentence': '[&FLXf]',
+				'p': 0.25
+			}
+		],
+		'F': 'S/////F!',
+		'S': 'F',
 		'branch_length': 2,
 		'branch_width': 0.3,
-		'branch_width_dropoff': 0.707,
+		'branch_width_dropoff': 0.9,
 		'leaf_length': 1,
+		'leaf_length_randomizer': 0.5,
 		'leaf_angle': 22.5 * PI / 180,
 		'leaf_color': Color(.133, .55, .133)
 	},
@@ -67,7 +84,10 @@ var patterns = [
 		'yaw_delta': 25.7 * PI / 180,
 		'roll_delta': 45 * PI / 180,
 		'pitch_delta': 25.7 * PI / 180,
-		'F': 'F[&+F]&F[/-F]/F'
+		'F': 'F[&+F]&FL[/-Ff]/F',
+		'leaf_length': 1,
+		'leaf_angle': 22.5 * PI / 180,
+		'leaf_color': Color(.133, .55, .133)
 	},
 	{
 		# 5
@@ -141,7 +161,7 @@ var patterns = [
 		'branch_width': 0.1,
 		'branch_width_dropoff': 0.707,
 		'leaf_length': 0.6,
-		'leaf_angle': 18 * PI / 180,
+		'leaf_angle': 22.5 * PI / 180,
 		'leaf_color': Color(.133, .55, .133)
 	},
 	{
@@ -165,10 +185,6 @@ var patterns = [
 		'leaf_color': Color(.133, .55, .133)
 	}
 ]
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass
 
 func apply_rules_to_sentence(pattern, sentence: String) -> String:
 	var new_sentence = ''
