@@ -208,6 +208,15 @@ func get_path_specs(index):
 	var pattern = patterns[index]
 
 	var sentence = pattern.axiom
-	for _i in range(pattern.iterations):
+
+	var whole_iterations = floor(pattern.iterations)
+	var remainder = pattern.iterations - whole_iterations
+	for _i in range(whole_iterations):
 		sentence = apply_rules_to_sentence(pattern, sentence)
+	if (remainder):
+		var parse_length = floor(remainder * sentence.length())
+		var to_parse = sentence.substr(0, parse_length)
+		var leftover = sentence.substr(parse_length)
+		sentence = apply_rules_to_sentence(pattern, to_parse) + leftover
+	print('sentence.length', sentence.length())
 	return { 'sentence': sentence, 'pattern': pattern }
