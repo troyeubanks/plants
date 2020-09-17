@@ -1,7 +1,16 @@
 tool
 extends MeshInstance
 
-export (Material) var material setget set_material, get_material
+var leaves := []
+onready var leaf_multi_mesh: MultiMeshInstance = $Leaves
+
+var flowers := []
+onready var flower_multi_mesh: MultiMeshInstance = $Flowers
+
+export (Material) var branch_material setget set_branch_material
+export (Material) var leaf_material setget set_leaf_material
+export (Material) var flower_material setget set_flower_material
+
 export var generator_seed := -1 setget set_generator_seed
 export var trunk_width := 1.0 setget set_trunk_width
 export var segment_length := 1.0 setget set_segment_length
@@ -84,17 +93,26 @@ func set_flower_color(fc: Color):
 	flower_color = fc
 	generate()
 
-func set_material(mat: Material):
-	material = mat
+func set_branch_material(mat: Material):
+	branch_material = mat
 	generate()
-func get_material() -> Material:
-	return material
+	
+func set_leaf_material(mat: Material):
+	leaf_material = mat
+	generate()
+	
+func set_flower_material(mat: Material):
+	flower_material = mat
+	generate()
+	
 func set_generator_seed(new_s: int):
 	generator_seed = new_s
 	generate()
+	
 func set_trunk_width(new_tw: float):
 	trunk_width = new_tw
 	generate()
+	
 func set_segment_length(new_sl: float):
 	segment_length = new_sl
 	generate()
@@ -124,6 +142,8 @@ func generate() -> void:
 		branch_sides
 	)
 	print("Got our turtle")
+	
+	leaves.clear()
 
 	turtle.surface_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	draw_branches(turtle, path_specs.pattern, path_specs.sentence)
@@ -131,8 +151,52 @@ func generate() -> void:
 	turtle.surface_tool.index()
 	turtle.surface_tool.generate_normals()
 	mesh = turtle.surface_tool.commit()
-	set_surface_material(0, material)
+	set_surface_material(0, branch_material)
+	
+	print("Adding leaves to mutlimesh: ", leaf_multi_mesh)
+	var mm = leaf_multi_mesh.multimesh
+	if !mm:
+		mm = MultiMesh.new()
+		leaf_multi_mesh.multimesh = mm
+		
+	mm.instance_count = 0
+	mm.mesh = MeshFactory.curved_leaf(leaf_edge_length, leaf_edge_length * 0.5)
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.set_custom_data_format(MultiMesh.CUSTOM_DATA_FLOAT)
+	mm.set_color_format(MultiMesh.COLOR_NONE)
+	mm.instance_count = leaves.size()
+	leaf_multi_mesh.material_override = leaf_material
+	
+	for i in leaves.size():
+		mm.set_instance_transform(i, leaves[i])
+		
+	leaves.clear()
+	
+	print("Adding flowers to multimesh: ", flower_multi_mesh)
+	mm = flower_multi_mesh.multimesh
+	if !mm:
+		mm = MultiMesh.new()
+		flower_multi_mesh.multimesh = mm
+		
+	mm.instance_count = 0
+	mm.mesh = MeshFactory.simple_flower(
+		flower_petal_length,
+		flower_petal_length * 0.33,
+		flower_num_petals
+	)
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.set_custom_data_format(MultiMesh.CUSTOM_DATA_FLOAT)
+	mm.set_color_format(MultiMesh.COLOR_NONE)
+	mm.instance_count = flowers.size()
+	flower_multi_mesh.material_override = flower_material
+	
+	for i in flowers.size():
+		mm.set_instance_transform(i, flowers[i])
+	
+	flowers.clear()
+	
 	print("Done")
+	
 
 func draw_branches(turtle: Turtle, pattern, sentence: String) -> void:
 	var current_width = branch_width
@@ -144,7 +208,11 @@ func draw_branches(turtle: Turtle, pattern, sentence: String) -> void:
 	var dimension_stack = []
 	for c in sentence:
 		if c == 'F':
-			turtle.draw_forward(current_length, current_width, branch_color)
+			turtle.draw_forward(
+				current_length, 
+				current_width, 
+				branch_color
+			)
 		elif c == '[':
 			turtle.save_state()
 			dimension_stack.append({
@@ -176,36 +244,33 @@ func draw_branches(turtle: Turtle, pattern, sentence: String) -> void:
 				var rando = 0.0
 				if pattern.has("leaf_length_randomizer"):
 					rando = pattern.leaf_length_randomizer
-				turtle.draw_leaf(
-					pattern.leaf_length * leaf_edge_length * rand_range(1.0 - rando, 1.0),
-					pattern.leaf_angle, 
-					leaf_color
+				leaves.push_back(
+					turtle.get_leaf_transform(
+						pattern.leaf_angle
+					)
 				)
 		elif c == '|':
 			turtle.reverse()
 		elif c == 'f':
 			# draw flower
 			if randf() < flower_spawn_chance:
-				turtle.draw_flower(
-					pattern.pitch_delta,
-					pattern.roll_delta,
-					flower_stem_length,
-					current_width,
-					flower_petal_length,
-					pattern.yaw_delta,
-					branch_color,
-					flower_color,
-					flower_num_petals
+				flowers.push_back(
+					turtle.get_flower_transform(
+						pattern.pitch_delta,
+						pattern.roll_delta,
+						flower_stem_length
+					)
 				)
-			
-#			pitch_angle: float,
-#			roll_angle: float,
-#			stem_length: float,
-#			stem_width: float,
-#			petal_length: float,
-#			petal_angle: float,
-#			stem_color: Color,
-#			petal_color: Color,
-#			num_petals: float):
+#				turtle.draw_flower(
+#					pattern.pitch_delta,
+#					pattern.roll_delta,
+#					flower_stem_length,
+#					current_width,
+#					flower_petal_length,
+#					pattern.yaw_delta,
+#					branch_color,
+#					flower_color,
+#					flower_num_petals
+#				)
 		else:
 			pass
