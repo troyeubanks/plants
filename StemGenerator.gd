@@ -1,5 +1,5 @@
 class_name StemGenerator
-	
+
 var patterns = [
 	{
 		# 0
@@ -183,7 +183,24 @@ var patterns = [
 		'leaf_length': 0.6,
 		'leaf_angle': 18 * PI / 180,
 		'leaf_color': Color(.133, .55, .133)
-	}
+	},
+	{
+		# 13
+		# fern
+		'axiom': 'FFFFX',
+		'iterations': 5,
+		'yaw_delta': 60 * PI / 180,
+		'roll_delta': 12.7 * PI / 180,
+		'pitch_delta': 12.7 * PI / 180,
+#		'X': 'F[+XL]!F[-XL]!',
+		'X': 'F[+F[-L]F[+L]L]F[-F[-L]F[+L]L]!XL',
+		'branch_length': 0.3,
+		'branch_width': 0.1,
+		'branch_width_dropoff': 0.707,
+		'leaf_length': 0.3,
+		'leaf_angle': 10 * PI / 180,
+		'leaf_color': Color(.133, .55, .133)
+	},
 ]
 
 func apply_rules_to_sentence(pattern, sentence: String) -> String:
@@ -204,13 +221,13 @@ func apply_rules_to_sentence(pattern, sentence: String) -> String:
 			new_sentence += c
 	return new_sentence
 
-func get_path_specs(index):
+func get_path_specs(index, iterations):
 	var pattern = patterns[index]
 
 	var sentence = pattern.axiom
 
-	var whole_iterations = floor(pattern.iterations)
-	var remainder = pattern.iterations - whole_iterations
+	var whole_iterations = floor(iterations)
+	var remainder = iterations - whole_iterations
 	for _i in range(whole_iterations):
 		sentence = apply_rules_to_sentence(pattern, sentence)
 	if (remainder):
