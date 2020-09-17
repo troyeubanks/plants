@@ -101,6 +101,14 @@ func draw_forward(distance: float, width: float, color: Color):
 #		surface_tool.add_vertex(a + v)
 	set_pos(_pos + v)
 
+# get a leaves position and rotation
+func get_leaf_transform(theta: float) -> Transform:
+	save_state()
+	pitch(rand_range(-theta * 3, theta * 3))
+	var t = Transform(Basis(_left, _up, _heading), _pos)
+	restore_state()
+	return t
+	
 # theta is angle, in radians, from stem
 # length is segment length, of which there are three
 func draw_leaf(length: float, theta: float, color: Color) -> void:
@@ -251,3 +259,16 @@ func draw_flower(
 			roll(num_petals * roll_angle)
 			draw_flower_petal(petal_angle, petal_length, pitch_angle, petal_color)
 		restore_state()
+
+func get_flower_transform(
+	pitch_angle: float, 
+	roll_angle: float,
+	stem_length: float
+) -> Transform:
+	save_state()
+	pitch(pitch_angle * 3.0)
+	move_forward(stem_length * 2.0)
+	roll(roll_angle)
+	var t = Transform(Basis(_left, _up, _heading), _pos)
+	restore_state()
+	return t
