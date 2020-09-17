@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=2]
 
-[sub_resource type="Shader" id=16]
+[sub_resource type="Shader" id=1]
 code = "shader_type spatial;
 render_mode blend_mix,depth_draw_opaque,cull_disabled,diffuse_burley,specular_schlick_ggx;
 
@@ -112,7 +112,7 @@ void fragment() {
 "
 
 [resource]
-shader = SubResource( 16 )
+shader = SubResource( 1 )
 shader_param/specular = 0.6
 shader_param/metallic = 0.0
 shader_param/roughness = 0.8
