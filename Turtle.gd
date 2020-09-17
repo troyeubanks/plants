@@ -119,7 +119,7 @@ func draw_leaf(length: float, theta: float, color: Color) -> void:
 	# base of leaf
 	var initial_pos = _pos
 
-	if true:
+	if false:
 		pitch(rand_range(-theta * 3, theta * 3))
 
 		# stem side of leaf

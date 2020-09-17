@@ -16,7 +16,7 @@ export var trunk_width := 1.0 setget set_trunk_width
 export var segment_length := 1.0 setget set_segment_length
 
 
-export(int, 0, 12) var tree = 12 setget set_tree
+export(int, 0, 13) var tree = 1 setget set_tree
 func set_tree(t: int):
 	tree = t
 	generate()
@@ -27,32 +27,32 @@ export var branch_width = 0.3 setget set_branch_width
 func set_branch_width(bw: float):
 	branch_width = bw
 	generate()
-	
+
 export var branch_width_dropoff = 0.707 setget set_branch_width_dropoff
 func set_branch_width_dropoff(bwd: float):
 	branch_width_dropoff = bwd
 	generate()
-	
+
 export var branch_length := 3.0 setget set_branch_length
 func set_branch_length(bl: float):
 	branch_length = bl
 	generate()
-	
+
 export var branch_length_dropoff := 0.707 setget set_branch_length_dropoff
 func set_branch_length_dropoff(bld: float):
 	branch_length_dropoff = bld
 	generate()
-	
+
 export var branch_color := Color(0.55, .27, .075) setget set_branch_color
 func set_branch_color(bc: Color):
 	branch_color = bc
 	generate()
-	
+
 export var branch_sides := 6 setget set_branch_sides
 func set_branch_sides(bs: int):
 	branch_sides = bs
 	generate()
-	
+
 export(float, 0.0, 1.0) var leaf_spawn_chance := 1.0 setget set_leaf_spawn_chance
 func set_leaf_spawn_chance(lsc: float):
 	leaf_spawn_chance = lsc
@@ -62,12 +62,12 @@ export var leaf_color := Color(.133, .55, .133) setget set_leaf_color
 func set_leaf_color(lc: Color):
 	leaf_color = lc
 	generate()
-	
+
 export var leaf_edge_length := 1.0 setget set_leaf_edge_length
 func set_leaf_edge_length(el: float):
 	leaf_edge_length = el
 	generate()
-	
+
 export(float, 0.0, 1.0) var flower_spawn_chance := 1.0 setget set_flower_spawn_chance
 func set_flower_spawn_chance(fsc: float):
 	flower_spawn_chance = fsc
@@ -77,12 +77,12 @@ export var flower_stem_length := 0.05 setget set_flower_stem_length
 func set_flower_stem_length(fsl: float):
 	flower_stem_length = fsl
 	generate()
-	
+
 export var flower_petal_length := 0.1 setget set_flower_petal_length
 func set_flower_petal_length(fpl: float):
 	flower_petal_length = fpl
 	generate()
-	
+
 export var flower_num_petals := 5 setget set_flower_num_petals
 func set_flower_num_petals(fnp: int):
 	flower_num_petals = fnp
@@ -95,6 +95,11 @@ func set_flower_color(fc: Color):
 
 func set_branch_material(mat: Material):
 	branch_material = mat
+  generate()
+  
+export (float, 0, 7) var iterations = 3 setget set_iterations
+func set_iterations(i: float):
+	iterations = i
 	generate()
 	
 func set_leaf_material(mat: Material):
@@ -124,21 +129,21 @@ func _ready() -> void:
 func generate() -> void:
 	if !is_inside_tree():
 		return
-		
+
 	print("Generating...")
 	if generator_seed == -1:
 		randomize()
 	else:
 		seed(generator_seed)
-		
+
 	cursor_position = Vector3.ZERO
 	var stem_generator := StemGenerator.new()
-	var path_specs = stem_generator.get_path_specs(tree)
+	var path_specs = stem_generator.get_path_specs(tree, iterations)
 	var surface_tool = SurfaceTool.new()
 	var turtle = Turtle.new(
-		surface_tool, 
-		Vector3.UP, 
-		Vector3.ZERO, 
+		surface_tool,
+		Vector3.UP,
+		Vector3.ZERO,
 		branch_sides
 	)
 	print("Got our turtle")
