@@ -4,41 +4,52 @@ class_name MeshFactory
 static func curved_leaf(length: float, width: float) -> ArrayMesh:
 	var verts = PoolVector3Array()
 	var uvs = PoolVector2Array()
+	var uv2s = PoolVector2Array()
 	var normals = PoolVector3Array()
 	
 	verts.push_back(Vector3(0.0, 0.0, 0.0))
-	uvs.push_back(Vector2(0.0, 0.0))
+	uvs.push_back(Vector2(0.0, 0.5))
+	uv2s.push_back(Vector2(0.0, 0.0))
 	normals.push_back(Vector3(0.0, -0.33, -0.66))
 	
 	verts.push_back(Vector3(width * -0.5, length * 0.3, length * 0.25))
-	uvs.push_back(Vector2(0.3, 0.3))
+	uvs.push_back(Vector2(0.3, 0.0))
+	uv2s.push_back(Vector2(0.3, 0.3))
 	normals.push_back(Vector3(0.0, -0.15, -0.85))
 	
 	verts.push_back(Vector3(width * 0.5, length * 0.3, length * 0.25))
-	uvs.push_back(Vector2(0.3, 0.3))
+	uvs.push_back(Vector2(0.3, 1.0))
+	uv2s.push_back(Vector2(0.3, 0.3))
 	normals.push_back(Vector3(0.0, -0.15, -0.85))
 	
 	verts.push_back(Vector3(width * -0.5, length * 0.7, length * 0.25))
-	uvs.push_back(Vector2(0.7, 0.7))
+	uvs.push_back(Vector2(0.7, 0.0))
+	uv2s.push_back(Vector2(0.7, 0.7))
 	normals.push_back(Vector3(0.0, 0.15, -0.85))
 	
 	verts.push_back(Vector3(width * 0.5, length * 0.7, length * 0.25))
-	uvs.push_back(Vector2(0.7, 0.7))
+	uvs.push_back(Vector2(0.7, 1.0))
+	uv2s.push_back(Vector2(0.7, 0.7))
 	normals.push_back(Vector3(0.0, 0.15, -0.85))
 	
 	verts.push_back(Vector3(0.0, length, 0.0))
-	uvs.push_back(Vector2(1.0, 1.0))
+	uvs.push_back(Vector2(1.0, 0.5))
+	uv2s.push_back(Vector2(1.0, 1.0))
 	normals.push_back(Vector3(0.0, 0.33, -0.66))
 	
 	var arrays = []
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = verts
-	arrays[Mesh.ARRAY_TEX_UV2] = uvs
-	arrays[Mesh.ARRAY_NORMAL] = normals	
+	arrays[Mesh.ARRAY_TEX_UV] = uvs
+	arrays[Mesh.ARRAY_TEX_UV2] = uv2s
+	arrays[Mesh.ARRAY_NORMAL] = normals
 	
 	var mesh = ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLE_STRIP, arrays)
-	mesh.custom_aabb = AABB(Vector3(-0.5, 0.0, -0.5), Vector3(0.5, 1.0, 0.5))
+	mesh.custom_aabb = AABB(
+		Vector3(-width, 0.0, -0.5), 
+		Vector3(width, length, 0.5)
+	)
 	
 	return mesh
 	

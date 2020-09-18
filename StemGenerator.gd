@@ -29,7 +29,7 @@ var patterns = [
 #		'X': '[&FL!Xf]/////[&FL!Xf]///////[&FL!Xf]|',
 		'X': [
 			{
-				'sentence': '[&FL!Xf]/////[&FL!Xf]///////[&FL!Xf]|',
+				'sentence': '[&FLXf]/////[&FLXf]///////[&FLXf]|',
 				'p': 0.25
 			},
 			{
@@ -49,7 +49,7 @@ var patterns = [
 		'S': 'F',
 		'branch_length': 2,
 		'branch_width': 0.3,
-		'branch_width_dropoff': 0.9,
+		'branch_width_dropoff': 0.925,
 		'leaf_length': 1,
 		'leaf_length_randomizer': 0.5,
 		'leaf_angle': 22.5 * PI / 180,

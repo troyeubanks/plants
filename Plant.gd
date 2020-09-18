@@ -95,7 +95,7 @@ func set_flower_color(fc: Color):
 
 func set_branch_material(mat: Material):
 	branch_material = mat
-  generate()
+	generate()
   
 export (float, 0, 7) var iterations = 3 setget set_iterations
 func set_iterations(i: float):
